@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+      }
+      .question-box {
+        margin-bottom: 15px;
+      }
+
+      .question {
+        font-weight: bold;
+      }
+
+      .option {
+        display: block;
+        padding: 3px 10px;
+        cursor: pointer;
+        border: 1px solid #eee;
+        margin-bottom: 5px;
+      }
+
+      .option:hover {
+        background-color: #ddd;
+      }
+      #result {
+        font-weight: bold;
+        padding: 10px;
+        display: none;
+      }
+      #showResultBtn {
+        padding: 5px 15px;
+        border: 1px solid #ccc;
+        background-color: #eee;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+    <title>설문조사</title>
+  </head>
+  <body>
+    <div id="survey"></div>
+    <button id="showResultBtn" onclick="checkAnsweredAndShowResult()">
+      결과 확인하기
+    </button>
+    <div id="result"></div>
+    <script>
+      const questions = [
+        {
+          question: "언니에게 받은 돌돌이가 매우 구리다",
+          options: [
+            { text: "그냥 쓴다", a: 2, b: 2, c: 5 },
+            { text: "당장 버리고 새로 산다", a: 1, b: 1, c: 0 },
+            { text: "새로 사고 선물받은 돌돌이도 쓴다", a: 2, b: 5, c: 4 },
+          ],
+        },
+        {
+          question: "집까지 걸어서 5분 거리에서 폭우가 내리기 시작했다",
+          options: [
+            { text: "편의점에서 우산을 산다", a: 5, b: 5, c: 0 },
+            { text: "그냥 비를 맞으며 달려간다", a: 4, b: 3, c: 5 },
+            {
+              text: "언니/누나/오빠/형/동생에게 전화해서 우산들고 나오라한다",
+              a: 3,
+              b: 3,
+              c: 0,
+            },
+          ],
+        },
+        {
+          question: "가장 좋아하는 집안일은 뭔가요",
+          options: [
+            { text: "설거지", a: 4, b: 4, c: 5 },
+            { text: "바닥청소", a: 3, b: 5, c: 3 },
+            { text: "욕실청소", a: 4, b: 4, c: 4 },
+          ],
+        },
+      ];
+
+      let score = { a: 0, b: 0, c: 0 };
+
+      function handleClick(option) {
+        score.a += option.a;
+        score.b += option.b;
+        score.c += option.c;
+      }
+
+      function checkAnsweredAndShowResult() {
+        const answeredCount = questions.filter((q) =>
+          q.options.some((o) => o.el.checked)
+        ).length;
+
+        if (answeredCount === questions.length) {
+          getMatchedType();
+        } else {
+          alert("모든 질문에 답해주세요!");
+        }
+      }
+
+      function getMatchedType() {
+        let resultText = "";
+
+        if (score.a >= 13) {
+          resultText = "알고보니 절친";
+        } else if (score.b >= 13) {
+          resultText = "알라뷰♥";
+        } else if (score.c >= 13) {
+          resultText = "당신은 나의 분신😘";
+        } else if (score.a > 10 && score.b < 10 && score.c < 10) {
+          resultText = "우리는 우정을 쌓아야합니다";
+        } else if (score.b > 10 && score.a < 10 && score.c < 10) {
+          resultText = "좀 좋아하는거 같기도??";
+        } else if (score.c > 10 && score.a < 10 && score.b < 10) {
+          resultText = "나랑 똑같으면 좀 별롱";
+        } else {
+          resultText = "잘모르겠네요";
+        }
+
+        const resultElement = document.getElementById("result");
+        resultElement.textContent = resultText;
+        resultElement.style.display = "block";
+      }
+
+      // Render questions and options
+      const surveyContainer = document.getElementById("survey");
+      questions.forEach((q, index) => {
+        const questionBox = document.createElement("div");
+        questionBox.classList.add("question-box");
+
+        const questionTitle = document.createElement("h3");
+        questionTitle.classList.add("question");
+        questionTitle.textContent = q.question;
+        questionBox.appendChild(questionTitle);
+
+        q.options.forEach((o, i) => {
+          const optionLabel = document.createElement("label");
+          optionLabel.classList.add("option");
+
+          const optionInput = document.createElement("input");
+          optionInput.type = "radio";
+          optionInput.name = `question-${index}`;
+          optionInput.value = i;
+          optionInput.onclick = () => {
+            handleClick(o);
+          };
+
+          o.el = optionInput;
+
+          optionLabel.appendChild(optionInput);
+
+          const optionText = document.createTextNode(o.text);
+          optionLabel.appendChild(optionText);
+
+          questionBox.appendChild(optionLabel);
+        });
+
+        surveyContainer.appendChild(questionBox);
+      });
+    </script>
+  </body>
+</html>
